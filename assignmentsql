@@ -1,0 +1,33 @@
+1) select CONCAT(students.first_name,' ',students.last_name) AS Name , batches.name, GROUP_CONCAT(DISTINCT subjects.name,' ',elective_groups.name) AS Full_Subjects from students left join students_subjects on students.id = students_subjects.student_id left join subjects on  students_subjects.subject_id = subjects.id   left join batches on  students_subjects.batch_id =batches.id left join elective_groups on  subjects.elective_group_id = elective_groups.id  where students.school_id = 8 group by Name;
+
+
+
+
+2)select CONCAT(students.first_name, " ", students.last_name) AS Name, count(subject_leaves.created_at) AS Leaves from students inner join subject_leaves on students.id = subject_leaves.student_id where students.school_id = 8 group by Name;
+
+
+
+
+3)select CONCAT(students.first_name, " ", students.last_name) AS Name,  date_format(subject_leaves.created_at, '%W ') AS Date, CONCAT(employees.first_name," ",employees.last_name) AS Marked_Teacher from students inner join subject_leaves on students.id = subject_leaves.student_id inner join employees on subject_leaves.employee_id = employees.id inner join subject_leaves_teachers on employees.id = subject_leaves_teachers.employee_id  where students.school_id = 8 group by Name;
+
+4)select CONCAT(students.first_name,' ',students.middle_name,' ',students.last_name) AS Name from students inner join finance_fees on students.id = finance_fees.student_id inner join finance_fee_collections on finance_fees.fee_collection_id = finance_fee_collections.id where (students.first_name like '%aman%' or students.middle_name like '%aman%' or students.last_name like '%aman%') and students.school_id = 8 and finance_fees.is_paid = 0 group by students.id=8;
+
+5) select CONCAT(students.first_name, " ", students.last_name) AS Name,finance_fees.discount_amount as Discount from students inner join finance_fees on students.id=finance_fees.student_id where finance_fees.discount_amount>0 ;
+
+6)select CONCAT(students.first_name,' ',students.last_name) AS Name,finance_transactions.payment_mode from students inner join finance_transactions on  finance_transactions.payee_id = students.id  where finance_transactions.payment_mode = "online Payment" and students.school_id = 8 group by Name;
+
+7)select timetable_entries.entry_type,timetable_entries.weekday_id ,timetable_entries.created_at,timetable_entries.updated_at , timetable_entries.class_timing_id    from timetable_entries inner join timetables on timetable_entries.timetable_id = timetables.id where (timetables.school_id = 8)  and(timetable_entries. created_at  between '2020-01-01' and '2021-01-01') group by timetable_entries.id;
+
+
+
+8)select CONCAT(employees.first_name ,' ' , employees.last_name) AS Teacher from employees left join batch_tutors on employees.id = batch_tutors.employee_id  left join employee_attendances on employees.id = employee_attendances.id where  employees.school_id = 8 group by employees.id ;
+
+
+
+
+
+
+9)select CONCAT(students.first_name,' ',students.middle_name,' ',students.last_name) as Student_Name,sum(finance_fees.balance) as balance,IFNULL(sum(IF(fine_rules.is_amount,fine_rules.fine_amount,(finance_fees.particular_total*fine_rules.fine_amount/100))), 0.0) as fine from students inner join finance_fees on finance_fees.student_id=students.id inner join finance_fee_collections on finance_fee_collections.id=finance_fees.fee_collection_id left join fines on fines.id=finance_fee_collections.fine_id left join fine_rules on fine_rules.fine_id=fines.id and fine_rules.id= ( select id from fine_rules as fine where fine.fine_id=fines.id and fine.fine_days <= DATEDIFF(finance_fee_collections.due_date,CURDATE()) order by fine.fine_days desc limit 1) where students.school_id=8 group by students.id;
+
+
+
